@@ -2,7 +2,7 @@
 
 from migen.fhdl.std import *
 from migen.genlib.misc import timeline
-from migen.bank.description import CSRStorage, CSRStatus
+from migen.bank.description import CSRStorage, CSRConstant
 
 from .filter import Filter
 
@@ -17,9 +17,9 @@ class Iir(Filter):
             intermediate_width = width + coeff_width # + bits_for(2*(order + 1))
 
         self.r_z0 = CSRStorage(intermediate_width - shift, reset=0)
-        self.r_shift = CSRStatus(bits_for(shift), reset=shift)
-        self.r_width = CSRStatus(bits_for(shift), reset=coeff_width)
-        self.r_interval = CSRStatus(8)
+        self.r_shift = CSRConstant(shift)
+        self.r_width = CSRConstant(coeff_width)
+        self.r_interval = CSRConstant(0)
 
         self.c = c = {}
         for i in "ab":
@@ -101,4 +101,4 @@ class Iir(Filter):
         else:
             raise ValueError
 
-        self.r_interval.status.reset = self.interval
+        self.r_interval.status = self.interval

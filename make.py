@@ -11,15 +11,23 @@ def get_csrmap(banks):
     for name, csrs, map_addr, rmap in banks:
         reg_addr = 0
         for csr in csrs:
-            yield [name, csr.name, map_addr, reg_addr, csr.size,
-                    not hasattr(csr, "status")]
-            reg_addr += (csr.size + 8 - 1)//8
+            if csr.size is None:
+                value = csr.status
+                addr = 0
+            else:
+                value = None
+                addr = reg_addr
+                reg_addr += (csr.size + 8 - 1)//8
+            rw = not hasattr(csr, "status")
+            yield (name, csr.name, map_addr, addr, csr.size,
+                    rw, value)
 
 
 def py_csrmap(it, fil):
     fil.write("csr = {\n")
+    fil.write("    # full_name: (bank, address, size, rw, value)\n")
     for reg in it:
-        fil.write("    '{}_{}': ({}, 0x{:03x}, {}, {}),\n".format(*reg))
+        fil.write("    '{}_{}': ({}, 0x{:03x}, {}, {}, {}),\n".format(*reg))
     fil.write("}\n")
 
 

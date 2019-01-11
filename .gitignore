@@ -9,5 +9,3 @@ __pycache__
 *.pyc
 /*.v
 
-.mypy_cache
-.vscode
